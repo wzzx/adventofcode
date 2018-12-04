@@ -169,6 +169,8 @@ func main() {
 	total_min := 0
 	sleeps_more_gid := 0
 	sleeps_more_min := 0
+	// -- part 2 --
+	tot_abs_min := 0
 	absolute_gid := 0
 	absolute_min := 0
 
@@ -190,8 +192,9 @@ func main() {
 				sleeps_more_min = i
 				total_min = v.sleepmap[i]
 			}
-			if v.sleepmap[i] > absolute_min {
-				absolute_min = v.sleepmap[i]
+			if v.sleepmap[i] > tot_abs_min {
+				tot_abs_min = v.sleepmap[i]
+				absolute_min = i
 				absolute_gid = k
 			}
 		}
