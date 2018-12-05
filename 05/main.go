@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -22,20 +23,7 @@ func reactPair(a byte, b byte) bool {
 	return false
 }
 
-func main() {
-	fh, err := os.Open("./input")
-	if err != nil {
-		fmt.Println(err)
-	}
-	var polymer_orig string
-	var polymer string
-
-	scanner := bufio.NewScanner(fh)
-	for scanner.Scan() {
-		polymer_orig = scanner.Text()
-	}
-	polymer = polymer_orig
-
+func reactPolymer(polymer string) int {
 	polymer_left := ""
 	polymer_right := ""
 
@@ -61,6 +49,41 @@ func main() {
 		}
 		polymer_left = string(polymer[:i])
 	}
+	return len(polymer)
+}
 
-	fmt.Printf("Polymer: %s\nUnits: %d\n", polymer, len(polymer))
+func main() {
+	fh, err := os.Open("./input")
+	if err != nil {
+		fmt.Println(err)
+	}
+	var polymer_orig string
+	var unittypes = make(map[string]string)
+
+	// read the polymer
+	scanner := bufio.NewScanner(fh)
+	for scanner.Scan() {
+		polymer_orig = scanner.Text()
+	}
+	// map the units in the polymer
+	for i := 0; i < len(polymer_orig); i++ {
+		s := strings.ToLower(string(polymer_orig[i]))
+		if _, ok := unittypes[s]; !ok {
+			unittypes[s] = s
+		}
+	}
+
+	units := reactPolymer(polymer_orig)
+	fmt.Printf("Original polymer units: %d\n", units)
+
+	// remove units and check for most compact polymer
+	for k, _ := range unittypes {
+		polymer := polymer_orig
+		regex_str := fmt.Sprintf("(?i)%s", unittypes[k])
+		re := regexp.MustCompile(regex_str)
+		polymer = re.ReplaceAllString(polymer, "")
+		units = reactPolymer(polymer)
+		fmt.Printf("Polymer without '%s' units: %d\n", k, units)
+
+	}
 }
